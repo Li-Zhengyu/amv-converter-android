@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@drawable/bg_header"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="AMV 转换器"
+            android:textColor="#FFFFFF"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnOpenPlayer"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:background="@drawable/bg_button_dark"
+            android:minWidth="0dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:stateListAnimator="@null"
+            android:text="播放 AMV"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="20dp">
+
+            <!-- preview -->
+            <FrameLayout
+                android:id="@+id/previewBox"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_preview">
+
+                <VideoView
+                    android:id="@+id/videoView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" />
+
+                <ImageView
+                    android:id="@+id/imagePreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:padding="6dp"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvPreviewHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="点击下方「选择文件」开始"
+                    android:textColor="#7C8AA0"
+                    android:textSize="13sp" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/trimRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnPlay"
+                    style="@style/AmvButton"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:text="播放" />
+
+                <Button
+                    android:id="@+id/btnSetStart"
+                    style="@style/AmvButton"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:enabled="false"
+                    android:text="设为起点" />
+
+                <Button
+                    android:id="@+id/btnSetEnd"
+                    style="@style/AmvButton"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:enabled="false"
+                    android:text="设为终点" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvRange"
+                style="@style/AmvHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="片段：请先选择文件" />
+
+            <!-- batch list -->
+            <LinearLayout
+                android:id="@+id/batchCard"
+                style="@style/AmvCard"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="待转换文件"
+                        android:textColor="#101828"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/btnClearBatch"
+                        style="@style/AmvButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:text="清空" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#EDF1F7" />
+
+                <LinearLayout
+                    android:id="@+id/batchList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <!-- source -->
+            <LinearLayout style="@style/AmvCard">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnPick"
+                        style="@style/AmvButtonPrimary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="46dp"
+                        android:text="选择文件" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvFileName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="middle"
+                            android:singleLine="true"
+                            android:text="未选择文件"
+                            android:textColor="#101828"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/tvFileInfo"
+                            style="@style/AmvHint"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:text="视频 / GIF / 图片 / 音乐" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- The system picker only enters multi-select on a long press, which nobody
+                     discovers unaided, so the batch feature is advertised here. -->
+                <TextView
+                    android:id="@+id/tvMultiHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_tip"
+                    android:lineSpacingExtra="2dp"
+                    android:padding="10dp"
+                    android:text="💡 批量转换：点「选择文件」后，长按文件即可多选（不确定怎么操作？点这里）"
+                    android:textColor="#1B4FD0"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- settings -->
+            <LinearLayout style="@style/AmvCard">
+
+                <TextView style="@style/AmvSection" android:text="分辨率" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/rowSize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <TextView style="@style/AmvSection" android:text="帧率" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/rowFps"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <TextView style="@style/AmvSection" android:text="画面" />
+
+                <LinearLayout
+                    android:id="@+id/rowFit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+
+                <TextView style="@style/AmvSection" android:text="体积" />
+
+                <LinearLayout
+                    android:id="@+id/rowQuality"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+
+                <TextView
+                    android:id="@+id/tvEstimate"
+                    style="@style/AmvHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="选择文件后显示预计体积" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnConvert"
+                style="@style/AmvButtonPrimary"
+                android:layout_width="match_parent"
+                android:layout_marginTop="14dp"
+                android:text="开始转换" />
+
+            <!-- progress -->
+            <LinearLayout
+                android:id="@+id/progressCard"
+                style="@style/AmvCard"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#101828"
+                    android:textSize="14sp" />
+
+                <ProgressBar
+                    android:id="@+id/progress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="10dp"
+                    android:max="100"
+                    android:progressDrawable="@drawable/progress_horizontal" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/outPreview"
+                        android:layout_width="104dp"
+                        android:layout_height="78dp"
+                        android:background="@drawable/bg_preview"
+                        android:padding="2dp"
+                        android:scaleType="fitCenter" />
+
+                    <TextView
+                        android:id="@+id/tvTiming"
+                        style="@style/AmvHint"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:text="输出画面实时预览" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="#101828"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:id="@+id/resultActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/btnPlayResult"
+                    style="@style/AmvButtonPrimary"
+                    android:layout_width="0dp"
+                    android:layout_height="46dp"
+                    android:layout_weight="1"
+                    android:text="播放效果" />
+
+                <Button
+                    android:id="@+id/btnSaveAs"
+                    style="@style/AmvButton"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:text="另存为" />
+
+                <Button
+                    android:id="@+id/btnShare"
+                    style="@style/AmvButton"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:text="分享" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

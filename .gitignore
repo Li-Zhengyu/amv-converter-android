@@ -1,1 +1,29 @@
-# placeholder
+# ---- build toolchain (several GB, fetched locally, never committed) ----
+.tools/
+!.tools/README.md
+
+# ---- build output & artifacts ----
+dist/
+build/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# ---- OS / editor noise ----
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
+*.iml
+
+# ---- Java ----
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# ---- scratch ----
+*.log

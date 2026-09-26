@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AMV 转换器</string>
+    <string name="player_label">用 AMV 播放器打开</string>
+</resources>
