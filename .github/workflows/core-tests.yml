@@ -1,0 +1,32 @@
+name: core tests
+
+# The AMV encoder/decoder core is deliberately pure Java with no Android dependency, so its
+# correctness suite runs anywhere - no SDK, no emulator, a few seconds per push.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Compile core and self-test
+        run: |
+          mkdir -p build/classes
+          # The settings/estimate helper from the app is pure Java too, so the test can cover it.
+          javac -encoding UTF-8 -nowarn -d build/classes \
+            $(find core/src -name '*.java') \
+            app/src/com/amvconverter/app/Presets.java
+          javac -encoding UTF-8 -nowarn -cp build/classes -d build/classes \
+            $(find core/test -name '*.java')
+
+      - name: Run unit tests
+        run: java -cp build/classes com.amvconverter.selftest.AmvSelfTest unit

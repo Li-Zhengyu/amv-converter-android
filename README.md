@@ -9,9 +9,8 @@
 ![size](https://img.shields.io/badge/APK-170%20KB-orange)
 ![deps](https://img.shields.io/badge/dependencies-none-lightgrey)
 
-<!-- 上传到 GitHub 后，取消下面这行注释并把 Li-Zhengyu/amv-converter-android 换成你的仓库：
+上传到 GitHub 后，取消下面这行注释并把 Li-Zhengyu/amv-converter-android 换成你的仓库：
 ![core tests](https://github.com/Li-Zhengyu/amv-converter-android/actions/workflows/core-tests.yml/badge.svg)
--->
 
 > **English**: A ~170 KB Android app that converts video, animated GIFs, images and audio into
 > the AMV format used by cheap MP3/MP4/MP5 players - and plays them back, since Android has no
