@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sits between the blurred video and the content so text stays readable in both themes. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:centerColor="@color/scrim_center"
+        android:endColor="@color/scrim_end"
+        android:startColor="@color/scrim_start" />
+</shape>

@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0B0F16"
+    android:background="@color/window_bg"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="#141A24"
+        android:background="@color/header_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="8dp"
@@ -21,7 +21,7 @@
             android:gravity="center"
             android:minWidth="48dp"
             android:text="‹"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/text_primary"
             android:textSize="26sp" />
 
         <TextView
@@ -32,7 +32,7 @@
             android:ellipsize="middle"
             android:singleLine="true"
             android:text="AMV 播放"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/text_primary"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:indeterminate="true"
-            android:indeterminateTint="#4C8DFF" />
+            android:indeterminateTint="@color/progress_fg" />
 
         <TextView
             android:id="@+id/tvPlayerMessage"
@@ -64,14 +64,14 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:padding="24dp"
-            android:textColor="#9AA7BB"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp" />
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#141A24"
+        android:background="@color/header_bg"
         android:orientation="vertical"
         android:paddingStart="14dp"
         android:paddingTop="10dp"
@@ -83,9 +83,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:max="100"
-            android:progressBackgroundTint="#2A3345"
-            android:progressTint="#4C8DFF"
-            android:thumbTint="#4C8DFF" />
+            android:progressBackgroundTint="@color/progress_bg"
+            android:progressTint="@color/progress_fg"
+            android:thumbTint="@color/progress_fg" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="00:00 / 00:00"
-                android:textColor="#C7D2E0"
+                android:textColor="@color/text_primary"
                 android:textSize="12sp" />
 
             <TextView
@@ -107,7 +107,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textColor="#8A97AB"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -139,7 +139,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:textColor="#8A97AB"
+            android:textColor="@color/text_secondary"
             android:textSize="12sp" />
     </LinearLayout>
 </LinearLayout>

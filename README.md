@@ -1,4 +1,4 @@
-﻿# AMV 转换器
+# AMV 转换器
 
 把手机里的**视频 / GIF 动图 / 图片 / 音乐**转换成本地播放器（老式 MP3/MP4/MP5）能播的
 **AMV（Actions Media Video）** 格式，并**内置 AMV 播放器**。
@@ -6,13 +6,13 @@
 
 ![license](https://img.shields.io/badge/license-Apache--2.0-blue)
 ![platform](https://img.shields.io/badge/platform-Android%205.0%2B-green)
-![size](https://img.shields.io/badge/APK-170%20KB-orange)
+![size](https://img.shields.io/badge/APK-620%20KB-orange)
 ![deps](https://img.shields.io/badge/dependencies-none-lightgrey)
 
 上传到 GitHub 后，取消下面这行注释并把 Li-Zhengyu/amv-converter-android 换成你的仓库：
 ![core tests](https://github.com/Li-Zhengyu/amv-converter-android/actions/workflows/core-tests.yml/badge.svg)
 
-> **English**: A ~170 KB Android app that converts video, animated GIFs, images and audio into
+> **English**: A ~600 KB Android app that converts video, animated GIFs, images and audio into
 > the AMV format used by cheap MP3/MP4/MP5 players - and plays them back, since Android has no
 > AMV support at all. The AMV encoder, decoder, container reader/writer and scaler are original
 > pure-Java code; no FFmpeg is bundled or linked. The format itself was reverse engineered from
@@ -45,11 +45,14 @@
 | **内置播放器** | 播放转换结果，也能直接播放手机里已有的 `.amv`；支持播放/暂停/逐帧/拖动定位 |
 | **系统打开方式** | 文件管理器或分享里点 `.amv`，可选本 App 打开 |
 | **参数** | 7 档分辨率 / 7 档帧率 / 3 种画面适配 / 3 档体积，含**实测可播放的推荐组合** |
+| **后台浮窗** | 可选：在其他应用上层显示进度，一键锁定后台，熄屏后转换继续（需「显示在其他应用上层」权限） |
+| **界面** | 亚克力动态背景（内置预模糊视频，30fps 静音循环，不占 UI 线程）、跟随系统深浅色、平板居中布局 |
 
 **输入格式**：MP4 / MKV / WebM / AVI / MOV / 3GP / TS / FLV 等（取决于设备解码器）、
 GIF、JPG / PNG / WebP、MP3 / M4A / AAC / WAV / FLAC / OGG。
 
-**不需要任何权限**（安卓 10+）：选文件用系统文件选择器，保存走 MediaStore。
+**转换本身不需要任何权限**（安卓 10+）：选文件用系统文件选择器，保存走 MediaStore。
+只有可选的**后台浮窗**需要「显示在其他应用上层」权限（Android 6+），不开启也完全不影响转换。
 
 ---
 
@@ -264,6 +267,7 @@ app/src/com/amvconverter/app/          Android 层
   AmvFrameBitmap.java       裸帧→JPEG 重建 + 方向修正（AMV 画面倒着存，解码端负责翻回来）
   PlayerActivity.java       播放界面
   ConvertService.java       前台服务：转换在这里执行，界面离开/小窗/分屏都不中断
+  FloatingWindowService.java 悬浮窗：显示其他应用上层、自动贴边、锁定后台
   ConversionState.java      服务与界面之间的共享状态（界面可随时接上、断开、再接上）
   OutputSaver.java          多路径保存
   MainActivity.java         单文件 + 批量转换界面（只做显示与调度）

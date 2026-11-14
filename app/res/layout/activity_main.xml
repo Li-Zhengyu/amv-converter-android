@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+    <!-- Acrylic backdrop: a tiny (480x270) pre-blurred loop decoded by the GPU. Muted and
+         silent, so it costs the UI thread almost nothing and scrolling stays smooth. -->
+    <TextureView
+        android:id="@+id/bgVideo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_scrim" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <!-- header -->
     <LinearLayout
@@ -19,9 +35,24 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="AMV 转换器"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/text_primary"
             android:textSize="19sp"
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnOverlay"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_button_dark"
+            android:minWidth="0dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:stateListAnimator="@null"
+            android:text="浮窗"
+            android:textAllCaps="false"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp" />
 
         <Button
             android:id="@+id/btnOpenPlayer"
@@ -34,9 +65,14 @@
             android:stateListAnimator="@null"
             android:text="播放 AMV"
             android:textAllCaps="false"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/text_primary"
             android:textSize="13sp" />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -44,6 +80,7 @@
         android:fillViewport="true">
 
         <LinearLayout
+            android:id="@+id/contentColumn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -80,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="点击下方「选择文件」开始"
-                    android:textColor="#7C8AA0"
+                    android:textColor="#D6D6D6"
                     android:textSize="13sp" />
             </FrameLayout>
 
@@ -143,7 +180,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="待转换文件"
-                        android:textColor="#101828"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -159,7 +196,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp"
-                    android:background="#EDF1F7" />
+                    android:background="@color/divider" />
 
                 <LinearLayout
                     android:id="@+id/batchList"
@@ -198,7 +235,7 @@
                             android:ellipsize="middle"
                             android:singleLine="true"
                             android:text="未选择文件"
-                            android:textColor="#101828"
+                            android:textColor="@color/text_primary"
                             android:textSize="15sp" />
 
                         <TextView
@@ -224,7 +261,7 @@
                     android:lineSpacingExtra="2dp"
                     android:padding="10dp"
                     android:text="💡 批量转换：点「选择文件」后，长按文件即可多选（不确定怎么操作？点这里）"
-                    android:textColor="#1B4FD0"
+                    android:textColor="@color/accent"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -301,7 +338,7 @@
                     android:id="@+id/tvStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#101828"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp" />
 
                 <ProgressBar
@@ -344,7 +381,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:textColor="#101828"
+                android:textColor="@color/text_primary"
                 android:textSize="13sp" />
 
             <LinearLayout
@@ -381,4 +418,5 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+    </LinearLayout>
+</FrameLayout>

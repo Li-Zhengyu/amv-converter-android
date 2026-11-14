@@ -10,15 +10,20 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.Surface;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -49,6 +54,7 @@ public final class MainActivity extends Activity implements ConversionState.Obse
     private static final int REQ_OPEN_AMV = 1002;
     private static final int REQ_SAVE_AS = 1003;
     private static final int REQ_LEGACY_PERM = 1004;
+    private static final int REQ_OVERLAY_PERM = 1006;
     private static final String PREFS = "amv";
     private static final String PREF_MULTI_HINT = "multi_hint_shown";
 
@@ -61,7 +67,7 @@ public final class MainActivity extends Activity implements ConversionState.Obse
     private FrameLayout previewBox;
     private LinearLayout resultActions, progressCard, batchList, batchCard, trimRow;
     private Button btnPick, btnPlay, btnSetStart, btnSetEnd, btnConvert, btnSaveAs, btnShare,
-            btnPlayResult, btnOpenPlayer, btnClearBatch;
+            btnPlayResult, btnOpenPlayer, btnClearBatch, btnOverlay;
     private LinearLayout rowSize, rowFps, rowFit, rowQuality;
     private ProgressBar progress;
 
@@ -90,10 +96,19 @@ public final class MainActivity extends Activity implements ConversionState.Obse
     private int chipFit = Presets.DEFAULT_FIT;
     private int chipQuality = Presets.DEFAULT_QUALITY;
 
+    private TextureView bgView;
+    private MediaPlayer bgPlayer;
+    private Surface bgSurface;
+    private int bgVideoW;
+    private int bgVideoH;
+    private boolean resumed;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setupBackdrop();
+        applyTabletLayout();
         bindViews();
         setupChips();
         wireActions();
@@ -161,6 +176,7 @@ public final class MainActivity extends Activity implements ConversionState.Obse
         btnPlayResult = (Button) findViewById(R.id.btnPlayResult);
         btnOpenPlayer = (Button) findViewById(R.id.btnOpenPlayer);
         btnClearBatch = (Button) findViewById(R.id.btnClearBatch);
+        btnOverlay = (Button) findViewById(R.id.btnOverlay);
         rowSize = (LinearLayout) findViewById(R.id.rowSize);
         rowFps = (LinearLayout) findViewById(R.id.rowFps);
         rowFit = (LinearLayout) findViewById(R.id.rowFit);
@@ -220,11 +236,206 @@ public final class MainActivity extends Activity implements ConversionState.Obse
         btnClearBatch.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) { clearSources(); }
         });
+        btnOverlay.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) { toggleOverlay(); }
+        });
         previewBox.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (!batchMode && info != null && info.kind == InputInfo.Kind.VIDEO) togglePlay();
             }
         });
+    }
+
+    // ------------------------------------------------------------------ floating window
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        resumed = true;
+        // The acrylic backdrop only runs while the screen is actually visible.
+        if (bgPlayer != null) {
+            try {
+                if (!bgPlayer.isPlaying()) bgPlayer.start();
+            } catch (Throwable ignored) {
+            }
+        }
+        // Self-heal: if the window was on before the activity (or the whole process) was
+        // recreated, bring it back instead of silently losing it.
+        if (FloatingWindowService.isEnabled(this)
+                && !FloatingWindowService.isShowing()
+                && FloatingWindowService.canDrawOverlays(this)) {
+            startOverlay();
+        }
+        updateOverlayButton();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        resumed = false;
+        if (bgPlayer != null) {
+            try {
+                if (bgPlayer.isPlaying()) bgPlayer.pause();
+            } catch (Throwable ignored) {
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------ acrylic backdrop
+
+    /**
+     * Plays a small, pre-blurred loop behind the UI. Blur is baked into the file rather than
+     * computed at runtime, so the GPU only has to stretch a 480x270 frame: decoding costs next
+     * to nothing and the UI thread never waits on it.
+     */
+    private void setupBackdrop() {
+        bgView = (TextureView) findViewById(R.id.bgVideo);
+        if (bgView == null) return;
+        bgView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+            public void onSurfaceTextureAvailable(SurfaceTexture st, int width, int height) {
+                startBackdrop(new Surface(st));
+            }
+
+            public void onSurfaceTextureSizeChanged(SurfaceTexture st, int width, int height) {
+                applyBackdropTransform();
+            }
+
+            public boolean onSurfaceTextureDestroyed(SurfaceTexture st) {
+                releaseBackdrop();
+                return true;
+            }
+
+            public void onSurfaceTextureUpdated(SurfaceTexture st) {
+            }
+        });
+    }
+
+    private void startBackdrop(Surface surface) {
+        releaseBackdrop();
+        try {
+            MediaPlayer mp = MediaPlayer.create(this, R.raw.bg_loop);
+            if (mp == null) return;
+            mp.setLooping(true);
+            mp.setVolume(0f, 0f);
+            mp.setSurface(surface);
+            bgVideoW = mp.getVideoWidth();
+            bgVideoH = mp.getVideoHeight();
+            bgSurface = surface;
+            bgPlayer = mp;
+            // Scale uniformly and crop the overflow (never stretch), so the 16:9 clip keeps its
+            // proportions on tall phones *and* on tablets.
+            applyBackdropTransform();
+            if (resumed) mp.start();
+        } catch (Throwable t) {
+            try {
+                surface.release();
+            } catch (Throwable ignored) {
+            }
+        }
+    }
+
+    /** Centre-crops the backdrop: uniform scale, no aspect-ratio distortion. */
+    private void applyBackdropTransform() {
+        if (bgView == null || bgVideoW <= 0 || bgVideoH <= 0) return;
+        int viewW = bgView.getWidth();
+        int viewH = bgView.getHeight();
+        if (viewW == 0 || viewH == 0) return;
+        float scale = Math.max(viewW / (float) bgVideoW, viewH / (float) bgVideoH);
+        Matrix matrix = new Matrix();
+        matrix.setScale(scale, scale);
+        matrix.postTranslate((viewW - bgVideoW * scale) / 2f, (viewH - bgVideoH * scale) / 2f);
+        bgView.setTransform(matrix);
+    }
+
+    /** On tablets a full-width phone column looks stretched, so cap it and centre it. */
+    private void applyTabletLayout() {
+        if (getResources().getConfiguration().screenWidthDp < 600) return;
+        View column = findViewById(R.id.contentColumn);
+        if (column == null) return;
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) column.getLayoutParams();
+        lp.width = dp(720);
+        lp.gravity = Gravity.CENTER_HORIZONTAL;
+        column.setLayoutParams(lp);
+    }
+
+    private void releaseBackdrop() {
+        if (bgPlayer != null) {
+            try {
+                bgPlayer.release();
+            } catch (Throwable ignored) {
+            }
+            bgPlayer = null;
+        }
+        if (bgSurface != null) {
+            try {
+                bgSurface.release();
+            } catch (Throwable ignored) {
+            }
+            bgSurface = null;
+        }
+    }
+
+    private void toggleOverlay() {
+        if (FloatingWindowService.isShowing()) {
+            hideOverlay();
+            return;
+        }
+        if (!FloatingWindowService.canDrawOverlays(this)) {
+            toast("开启浮窗需要「显示在其他应用上层」权限");
+            try {
+                Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(i, REQ_OVERLAY_PERM);
+            } catch (Throwable t) {
+                toast("无法打开浮窗权限设置");
+            }
+            return;
+        }
+        startOverlay();
+    }
+
+    private void startOverlay() {
+        requestNotificationPermissionIfNeeded();
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                .putBoolean(FloatingWindowService.PREF_ENABLED, true).apply();
+        Intent i = new Intent(this, FloatingWindowService.class);
+        i.setAction(FloatingWindowService.ACTION_SHOW);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(i);
+            } else {
+                startService(i);
+            }
+            toast("浮窗已开启，可拖动标题栏移动");
+        } catch (Throwable t) {
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                    .putBoolean(FloatingWindowService.PREF_ENABLED, false).apply();
+            toast("浮窗启动失败：" + (t.getMessage() == null ? "未知原因" : t.getMessage()));
+        }
+        // The service attaches the view asynchronously, so re-label after it had a chance to.
+        ui.postDelayed(new Runnable() {
+            public void run() {
+                updateOverlayButton();
+            }
+        }, 400);
+    }
+
+    private void hideOverlay() {
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                .putBoolean(FloatingWindowService.PREF_ENABLED, false).apply();
+        try {
+            stopService(new Intent(this, FloatingWindowService.class));
+        } catch (Throwable ignored) {
+        }
+        updateOverlayButton();
+        toast("浮窗已关闭");
+    }
+
+    private void updateOverlayButton() {
+        if (btnOverlay == null) return;
+        boolean on = FloatingWindowService.isShowing()
+                || FloatingWindowService.isEnabled(this);
+        btnOverlay.setText(on ? "关浮窗" : "浮窗");
     }
 
     // ------------------------------------------------------------------ picking
@@ -283,6 +494,17 @@ public final class MainActivity extends Activity implements ConversionState.Obse
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_OVERLAY_PERM) {
+            // The settings screen returns RESULT_CANCELED whether or not the switch was flipped,
+            // so the permission itself is the only reliable answer here.
+            if (FloatingWindowService.canDrawOverlays(this)) {
+                startOverlay();
+            } else {
+                toast("没有浮窗权限，无法显示悬浮窗");
+                updateOverlayButton();
+            }
+            return;
+        }
         if (resultCode != RESULT_OK || data == null) return;
 
         if (requestCode == REQ_PICK) {
@@ -397,7 +619,7 @@ public final class MainActivity extends Activity implements ConversionState.Obse
             TextView name = new TextView(this);
             name.setText((i + 1) + ". " + shortName(uris.get(i).getLastPathSegment()));
             name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-            name.setTextColor(Color.parseColor("#101828"));
+            name.setTextColor(getResources().getColor(R.color.text_primary));
             name.setSingleLine(true);
             name.setEllipsize(TextUtils.TruncateAt.MIDDLE);
             LinearLayout.LayoutParams nlp = new LinearLayout.LayoutParams(
@@ -407,7 +629,7 @@ public final class MainActivity extends Activity implements ConversionState.Obse
             TextView status = new TextView(this);
             status.setText("等待");
             status.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-            status.setTextColor(Color.parseColor("#667085"));
+            status.setTextColor(getResources().getColor(R.color.text_secondary));
             status.setGravity(Gravity.END);
             status.setMinWidth(dp(84));
 
@@ -781,7 +1003,7 @@ public final class MainActivity extends Activity implements ConversionState.Obse
                 TextView tv = batchStatus.get(i);
                 if (!text.equals(tv.getText().toString())) {
                     tv.setText(text);
-                    tv.setTextColor(Color.parseColor(colorFor(text)));
+                    tv.setTextColor(getResources().getColor(colorFor(text)));
                 }
             }
         }
@@ -796,12 +1018,11 @@ public final class MainActivity extends Activity implements ConversionState.Obse
         }
     }
 
-    private static String colorFor(String rowText) {
-        if (rowText.startsWith("完成")) return "#067647";
-        if (rowText.startsWith("失败") || rowText.startsWith("跳过")) return "#B42318";
-        if (rowText.equals("已取消")) return "#667085";
-        if (rowText.endsWith("%")) return "#2B6CF6";
-        return "#667085";
+    private static int colorFor(String rowText) {
+        if (rowText.startsWith("完成")) return R.color.success;
+        if (rowText.startsWith("失败") || rowText.startsWith("跳过")) return R.color.danger;
+        if (rowText.endsWith("%")) return R.color.accent;
+        return R.color.text_muted;
     }
 
     // ------------------------------------------------------------------ result
@@ -858,6 +1079,7 @@ public final class MainActivity extends Activity implements ConversionState.Obse
     protected void onDestroy() {
         super.onDestroy();
         destroyed = true;
+        releaseBackdrop();
         ConversionState.removeObserver(this);
         stopPlayback();
         // Deliberately NOT cancelling the conversion: it belongs to the service and must survive

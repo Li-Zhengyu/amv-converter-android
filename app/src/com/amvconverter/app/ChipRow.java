@@ -33,7 +33,7 @@ final class ChipRow {
             TextView chip = new TextView(ctx);
             chip.setText(items[i].toString());
             chip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-            chip.setTextColor(ctx.getResources().getColorStateList(R.color.chip_text));
+            chip.setTextColor(ctx.getResources().getColorStateList(R.color.chip_label));
             chip.setBackgroundResource(R.drawable.bg_chip);
             chip.setGravity(Gravity.CENTER);
             chip.setMinWidth(dp(ctx, 56));

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark palette, shared with the B站视频下载器 desktop project. -->
+<resources>
+    <color name="window_bg">#1F1F1F</color>
+    <color name="card_bg">#C42A2A2A</color>
+    <color name="card_bg_alt">#C4323232</color>
+    <color name="header_bg">#B32A2A2A</color>
+    <color name="text_primary">#F3F3F3</color>
+    <color name="text_secondary">#A6A6A6</color>
+    <color name="text_muted">#858585</color>
+
+    <color name="accent">#60CDFF</color>
+    <color name="accent_fill">#0078D4</color>
+    <color name="accent_pressed">#0067B8</color>
+    <color name="accent_on">#FFFFFF</color>
+
+    <color name="button_bg">#CC3D3D3D</color>
+    <color name="button_bg_pressed">#E64A4A4A</color>
+    <color name="button_border">#664A4A4A</color>
+
+    <color name="divider">#3D3D3D</color>
+    <color name="chip_bg">#B3323232</color>
+    <color name="chip_border">#664A4A4A</color>
+    <color name="chip_text">#D6D6D6</color>
+    <color name="chip_text_selected">#FFFFFF</color>
+
+    <color name="tip_bg">#992F3B41</color>
+    <color name="tip_border">#664E6A75</color>
+
+    <color name="overlay_bg">#F22A2A2A</color>
+    <color name="overlay_border">#804A4A4A</color>
+
+    <color name="progress_bg">#3D3D3D</color>
+    <color name="progress_fg">#60CDFF</color>
+
+    <color name="preview_bg">#99000000</color>
+
+    <color name="scrim_start">#4D1F1F1F</color>
+    <color name="scrim_center">#661F1F1F</color>
+    <color name="scrim_end">#991F1F1F</color>
+
+    <color name="success">#6CCB5F</color>
+    <color name="danger">#F14C4C</color>
+</resources>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Compact floating card. The whole card is draggable (the service attaches the touch
+  listener to the root), while the close/stop/lock buttons keep consuming their own taps.
+  Width is intentionally narrow so it leaves most of the screen usable on top of other apps.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/overlayRoot"
+    android:layout_width="168dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_overlay"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="AMV 转换"
+            android:textColor="@color/text_primary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnOverlayClose"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:contentDescription="关闭浮窗"
+            android:gravity="center"
+            android:text="×"
+            android:textColor="@color/text_secondary"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvOverlayStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="待命 · 没有进行中的转换"
+        android:textColor="#A6A6A6"
+        android:textSize="11sp" />
+
+    <ProgressBar
+        android:id="@+id/overlayProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="6dp"
+        android:max="100"
+        android:progressDrawable="@drawable/progress_horizontal" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnOverlayLock"
+            style="@style/AmvMiniButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="锁定" />
+
+        <Button
+            android:id="@+id/btnOverlayStop"
+            style="@style/AmvMiniButton"
+            android:layout_width="0dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:text="停止" />
+    </LinearLayout>
+</LinearLayout>

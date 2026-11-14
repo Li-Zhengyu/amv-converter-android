@@ -2,14 +2,16 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
-            <solid android:color="#2E3A4D" />
-            <corners android:radius="14dp" />
+            <solid android:color="@color/button_bg_pressed" />
+            <corners android:radius="6dp" />
+            <stroke android:width="1dp" android:color="@color/button_border" />
         </shape>
     </item>
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="#222B3A" />
-            <corners android:radius="14dp" />
+            <solid android:color="@color/button_bg" />
+            <corners android:radius="6dp" />
+            <stroke android:width="1dp" android:color="@color/button_border" />
         </shape>
     </item>
 </selector>

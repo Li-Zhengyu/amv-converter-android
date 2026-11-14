@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Light palette (Win11 light + acrylic). The dark counterpart lives in values-night. -->
+<resources>
+    <color name="window_bg">#F3F3F3</color>
+    <color name="card_bg">#CCFFFFFF</color>
+    <color name="card_bg_alt">#CCF2F2F2</color>
+    <color name="header_bg">#CCF7F7F7</color>
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#5F5F5F</color>
+    <color name="text_muted">#8A8A8A</color>
+
+    <color name="accent">#005A9E</color>
+    <color name="accent_fill">#0078D4</color>
+    <color name="accent_pressed">#0067B8</color>
+    <color name="accent_on">#FFFFFF</color>
+
+    <color name="button_bg">#E6FFFFFF</color>
+    <color name="button_bg_pressed">#CCDCDCDC</color>
+    <color name="button_border">#33000000</color>
+
+    <color name="divider">#33000000</color>
+    <color name="chip_bg">#B3FFFFFF</color>
+    <color name="chip_border">#33000000</color>
+    <color name="chip_text">#1A1A1A</color>
+    <color name="chip_text_selected">#FFFFFF</color>
+
+    <color name="tip_bg">#CCE8F4FD</color>
+    <color name="tip_border">#802C7CB8</color>
+
+    <color name="overlay_bg">#F2FFFFFF</color>
+    <color name="overlay_border">#33000000</color>
+
+    <color name="progress_bg">#33000000</color>
+    <color name="progress_fg">#0078D4</color>
+
+    <color name="preview_bg">#99000000</color>
+
+    <color name="scrim_start">#26FFFFFF</color>
+    <color name="scrim_center">#4DFFFFFF</color>
+    <color name="scrim_end">#80FFFFFF</color>
+
+    <color name="success">#107C10</color>
+    <color name="danger">#C42B1C</color>
+</resources>
