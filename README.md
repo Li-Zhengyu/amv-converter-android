@@ -6,13 +6,13 @@
 
 ![license](https://img.shields.io/badge/license-Apache--2.0-blue)
 ![platform](https://img.shields.io/badge/platform-Android%205.0%2B-green)
-![size](https://img.shields.io/badge/APK-620%20KB-orange)
+![size](https://img.shields.io/badge/APK-1.7%20MB-orange)
 ![deps](https://img.shields.io/badge/dependencies-none-lightgrey)
 
 上传到 GitHub 后，取消下面这行注释并把 Li-Zhengyu/amv-converter-android 换成你的仓库：
 ![core tests](https://github.com/Li-Zhengyu/amv-converter-android/actions/workflows/core-tests.yml/badge.svg)
 
-> **English**: A ~600 KB Android app that converts video, animated GIFs, images and audio into
+> **English**: A ~1.7 MB Android app that converts video, animated GIFs, images and audio into
 > the AMV format used by cheap MP3/MP4/MP5 players - and plays them back, since Android has no
 > AMV support at all. The AMV encoder, decoder, container reader/writer and scaler are original
 > pure-Java code; no FFmpeg is bundled or linked. The format itself was reverse engineered from

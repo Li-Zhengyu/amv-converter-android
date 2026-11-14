@@ -285,12 +285,20 @@ public final class MainActivity extends Activity implements ConversionState.Obse
 
     /**
      * Plays a small, pre-blurred loop behind the UI. Blur is baked into the file rather than
-     * computed at runtime, so the GPU only has to stretch a 480x270 frame: decoding costs next
+     * computed at runtime, so the GPU only has to sample a 1080p frame: decoding costs next
      * to nothing and the UI thread never waits on it.
      */
     private void setupBackdrop() {
         bgView = (TextureView) findViewById(R.id.bgVideo);
         if (bgView == null) return;
+        // The surface can become available before the view is measured; re-apply whenever the
+        // bounds change so the crop never falls back to the stretched default.
+        bgView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                applyBackdropTransform();
+            }
+        });
         bgView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             public void onSurfaceTextureAvailable(SurfaceTexture st, int width, int height) {
                 startBackdrop(new Surface(st));
@@ -340,10 +348,13 @@ public final class MainActivity extends Activity implements ConversionState.Obse
         int viewW = bgView.getWidth();
         int viewH = bgView.getHeight();
         if (viewW == 0 || viewH == 0) return;
-        float scale = Math.max(viewW / (float) bgVideoW, viewH / (float) bgVideoH);
+        // TextureView already stretches the frame to the view bounds (identity transform), so the
+        // correction factors below turn that stretch into a uniform, centre-anchored cover crop.
+        float scaleX = viewW / (float) bgVideoW;
+        float scaleY = viewH / (float) bgVideoH;
+        float scale = Math.max(scaleX, scaleY);
         Matrix matrix = new Matrix();
-        matrix.setScale(scale, scale);
-        matrix.postTranslate((viewW - bgVideoW * scale) / 2f, (viewH - bgVideoH * scale) / 2f);
+        matrix.setScale(scale / scaleX, scale / scaleY, viewW / 2f, viewH / 2f);
         bgView.setTransform(matrix);
     }
 
